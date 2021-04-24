@@ -22,8 +22,9 @@ package types
 
 // AddSearchAttributeRequest is an internal type (TBD...)
 type AddSearchAttributeRequest struct {
-	SearchAttribute map[string]IndexedValueType `json:"searchAttribute,omitempty"`
-	SecurityToken   string                      `json:"securityToken,omitempty"`
+	SearchAttribute         map[string]IndexedValueType `json:"searchAttribute,omitempty"`
+	SecurityToken           string                      `json:"securityToken,omitempty"`
+	UpdateElasticSearchOnly bool                        `json:"updateElasticSearchOnly,omitempty"`
 }
 
 // GetSearchAttribute is an internal getter (TBD...)

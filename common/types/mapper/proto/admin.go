@@ -30,8 +30,9 @@ func FromAdminAddSearchAttributeRequest(t *types.AddSearchAttributeRequest) *adm
 		return nil
 	}
 	return &adminv1.AddSearchAttributeRequest{
-		SearchAttribute: FromIndexedValueTypeMap(t.SearchAttribute),
-		SecurityToken:   t.SecurityToken,
+		SearchAttribute:         FromIndexedValueTypeMap(t.SearchAttribute),
+		SecurityToken:           t.SecurityToken,
+		UpdateElasticSearchOnly: t.UpdateElasticSearchOnly,
 	}
 }
 
@@ -40,8 +41,9 @@ func ToAdminAddSearchAttributeRequest(t *adminv1.AddSearchAttributeRequest) *typ
 		return nil
 	}
 	return &types.AddSearchAttributeRequest{
-		SearchAttribute: ToIndexedValueTypeMap(t.SearchAttribute),
-		SecurityToken:   t.SecurityToken,
+		SearchAttribute:         ToIndexedValueTypeMap(t.SearchAttribute),
+		SecurityToken:           t.SecurityToken,
+		UpdateElasticSearchOnly: t.UpdateElasticSearchOnly,
 	}
 }
 

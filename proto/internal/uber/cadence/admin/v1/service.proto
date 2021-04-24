@@ -216,6 +216,7 @@ message ReapplyEventsResponse {
 message AddSearchAttributeRequest {
   map<string, api.v1.IndexedValueType> search_attribute = 1;
   string security_token = 2;
+  bool update_elastic_search_only = 3;
 }
 
 message AddSearchAttributeResponse {

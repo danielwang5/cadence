@@ -186,29 +186,34 @@ func (adh *adminHandlerImpl) AddSearchAttribute(
 		return adh.error(&types.BadRequestError{Message: fmt.Sprintf("AdvancedVisibilityStore is not configured for this Cadence Cluster")}, scope)
 	}
 
-	searchAttr := request.GetSearchAttribute()
-	currentValidAttr, _ := adh.params.DynamicConfig.GetMapValue(
+	attrsToAdd := request.GetSearchAttribute()
+	currentValidAttrs, err := adh.params.DynamicConfig.GetMapValue(
 		dynamicconfig.ValidSearchAttributes, nil, definition.GetDefaultIndexedKeys())
-	for k, v := range searchAttr {
-		if definition.IsSystemIndexedKey(k) {
-			return adh.error(&types.BadRequestError{Message: fmt.Sprintf("Key [%s] is reserved by system", k)}, scope)
+	if err != nil {
+		return adh.error(&types.InternalServiceError{Message: fmt.Sprintf("Failed to read current valid attributes from dynamic config, err: %v", err)}, scope)
+	}
+	for attrName, valueType := range attrsToAdd {
+		if definition.IsSystemIndexedKey(attrName) {
+			return adh.error(&types.BadRequestError{Message: fmt.Sprintf("Key [%s] is reserved by system", attrName)}, scope)
 		}
-		if _, exist := currentValidAttr[k]; exist {
-			return adh.error(&types.BadRequestError{Message: fmt.Sprintf("Key [%s] is already whitelist", k)}, scope)
+		if _, exist := currentValidAttrs[attrName]; exist {
+			return adh.error(&types.BadRequestError{Message: fmt.Sprintf("Key [%s] is already whitelist", attrName)}, scope)
 		}
 
-		currentValidAttr[k] = int(v)
+		currentValidAttrs[attrName] = int(valueType)
 	}
 
-	// update dynamic config
-	err := adh.params.DynamicConfig.UpdateValue(dynamicconfig.ValidSearchAttributes, currentValidAttr)
-	if err != nil {
-		return adh.error(&types.InternalServiceError{Message: fmt.Sprintf("Failed to update dynamic config, err: %v", err)}, scope)
+	if !request.UpdateElasticSearchOnly {
+		// update dynamic config
+		err = adh.params.DynamicConfig.UpdateValue(dynamicconfig.ValidSearchAttributes, currentValidAttrs)
+		if err != nil {
+			return adh.error(&types.InternalServiceError{Message: fmt.Sprintf("Failed to update dynamic config, err: %v", err)}, scope)
+		}
 	}
 
 	// update elasticsearch mapping, new added field will not be able to remove or update
 	index := adh.params.ESConfig.GetVisibilityIndex()
-	for k, v := range searchAttr {
+	for k, v := range attrsToAdd {
 		valueType := convertIndexedValueTypeToESDataType(v)
 		if len(valueType) == 0 {
 			return adh.error(&types.BadRequestError{Message: fmt.Sprintf("Unknown value type, %v", v)}, scope)
