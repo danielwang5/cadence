@@ -61,7 +61,12 @@ func AdminAddSearchAttribute(c *cli.Context) {
 	if err != nil {
 		ErrorAndExit("Add search attribute failed.", err)
 	}
-	fmt.Println("Success")
+	if esOnly {
+		fmt.Println("Success. Make sure to update dynamic config accordingly!")
+	} else {
+		fmt.Println("Success.")
+	}
+
 }
 
 // AdminDescribeCluster is used to dump information about the cluster
