@@ -568,6 +568,21 @@ func getRequiredOption(c *cli.Context, optionName string) string {
 	return value
 }
 
+func getRequiredBoolOption(c *cli.Context, optionName string) bool {
+	value := c.String(optionName)
+	if len(value) == 0 {
+		ErrorAndExit(fmt.Sprintf("Option %s is required", optionName), nil)
+	}
+	if value == "true" {
+		return true
+	} else if value == "false" {
+		return false
+	} else {
+		ErrorAndExit(fmt.Sprintf("Option %s can be only true or false", optionName), nil)
+		return false
+	}
+}
+
 func getRequiredInt64Option(c *cli.Context, optionName string) int64 {
 	if !c.IsSet(optionName) {
 		ErrorAndExit(fmt.Sprintf("Option %s is required", optionName), nil)

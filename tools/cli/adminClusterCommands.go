@@ -39,6 +39,7 @@ func AdminAddSearchAttribute(c *cli.Context) {
 	if !isValueTypeValid(valType) {
 		ErrorAndExit("Unknown Search Attributes value type.", nil)
 	}
+	esOnly := getRequiredBoolOption(c, FlagUpdateElasticSearchOnly)
 
 	// ask user for confirmation
 	promptMsg := fmt.Sprintf("Are you trying to add key [%s] with Type [%s]? Y/N",
@@ -52,7 +53,8 @@ func AdminAddSearchAttribute(c *cli.Context) {
 		SearchAttribute: map[string]types.IndexedValueType{
 			key: types.IndexedValueType(valType),
 		},
-		SecurityToken: c.String(FlagSecurityToken),
+		SecurityToken:           c.String(FlagSecurityToken),
+		UpdateElasticSearchOnly: esOnly,
 	}
 
 	err := adminClient.AddSearchAttribute(ctx, request)

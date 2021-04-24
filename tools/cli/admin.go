@@ -643,6 +643,11 @@ func newAdminClusterCommands() []cli.Command {
 			Usage:   "whitelist search attribute",
 			Flags: []cli.Flag{
 				cli.StringFlag{
+					Name: FlagUpdateElasticSearchOnlyWithAlias,
+					Usage: "[true, false] true: Only adding attributes to ElasticSearch, and then you have to update dynamic config to add the attributes; " +
+						"false: Update dynamic config and then adding to ElasticSearch -- this only works if Cadence server is running in onebox, eg local or docker-compose. Never use this in clusters.",
+				},
+				cli.StringFlag{
 					Name:  FlagSearchAttributesKey,
 					Usage: "Search Attribute key to be whitelisted",
 				},
