@@ -136,8 +136,8 @@ func cancellationWorkflow(ctx workflow.Context, scheduledTimeNanos int64, domain
 		if !useRunID {
 			childExecution.RunID = ""
 		}
-		cancellatinFuture := workflow.RequestCancelExternalWorkflow(ctx, childExecution.ID, childExecution.RunID)
-		err = cancellatinFuture.Get(ctx, nil)
+		cancellationFuture := workflow.RequestCancelExternalWorkflow(ctx, childExecution.ID, childExecution.RunID)
+		err = cancellationFuture.Get(ctx, nil)
 		if err != nil {
 			workflow.GetLogger(ctx).Info("cancellationWorkflow failed: fail to send cancellation to child workflow", zap.Error(err))
 			return err
